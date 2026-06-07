@@ -11,6 +11,7 @@ Counting rules (chosen by the project owner):
 """
 
 import logging
+import os
 from collections import defaultdict
 from typing import Any, Dict, List, Optional
 
@@ -20,8 +21,9 @@ from youtrack_mcp.utils import format_json_response
 
 logger = logging.getLogger(__name__)
 
-# The default agile board to report on. Override via the `board` argument.
-DEFAULT_BOARD = "Rango Dev"
+# Default agile board to report on. Set YOUTRACK_DEFAULT_BOARD in your environment,
+# or pass the `board` argument explicitly on each call.
+DEFAULT_BOARD = os.getenv("YOUTRACK_DEFAULT_BOARD", "")
 
 # Field names as configured in the YouTrack project.
 STAGE_FIELD = "Stage"
@@ -118,6 +120,10 @@ class ReportTools:
 
         Returns {"board": <name>, "sprint": <name>} or raises ValueError.
         """
+        if not board_name:
+            raise ValueError(
+                "No board specified. Pass board=... or set the YOUTRACK_DEFAULT_BOARD environment variable."
+            )
         board = self._find_board(board_name)
         if not board:
             raise ValueError(
@@ -164,7 +170,7 @@ class ReportTools:
         """
         Report story points per developer for a sprint, broken down by Stage (status).
 
-        FORMAT: sprint_developer_report(sprint="Sprint #91", board="Rango Dev")
+        FORMAT: sprint_developer_report(sprint="Sprint #91", board="Dev Board")
                 sprint_developer_report()  # defaults to the board's current sprint
 
         A task with several assignees credits full points to each. Tasks without a
@@ -172,7 +178,7 @@ class ReportTools:
 
         Args:
             sprint: Sprint name (e.g. "Sprint #91"). Defaults to the board's current sprint.
-            board: Agile board name. Defaults to "Rango Dev".
+            board: Agile board name. Defaults to the YOUTRACK_DEFAULT_BOARD env var.
             assignee: Optional login/name to limit the report to a single developer.
 
         Returns:
@@ -238,7 +244,7 @@ class ReportTools:
 
         Args:
             sprint: Sprint name (e.g. "Sprint #91"). Defaults to the board's current sprint.
-            board: Agile board name. Defaults to "Rango Dev".
+            board: Agile board name. Defaults to the YOUTRACK_DEFAULT_BOARD env var.
             squad: Optional squad name (e.g. "Squad A") to limit the report.
 
         Returns:
@@ -293,14 +299,14 @@ class ReportTools:
                 "description": (
                     "Story points per developer for a sprint, broken down by Stage/status "
                     '(Backlog, In Progress, Review, Test, Published, ...). '
-                    'Example: sprint_developer_report(sprint="Sprint #91", board="Rango Dev"). '
+                    'Example: sprint_developer_report(sprint="Sprint #91", board="Dev Board"). '
                     "Omit sprint to use the board's current sprint. A task with multiple "
                     "assignees credits full points to each; unestimated tasks are counted separately."
                 ),
                 "function": self.sprint_developer_report,
                 "parameter_descriptions": {
                     "sprint": "Sprint name e.g. 'Sprint #91' (default: board's current sprint)",
-                    "board": "Agile board name (default: 'Rango Dev')",
+                    "board": "Agile board name (default: YOUTRACK_DEFAULT_BOARD env var)",
                     "assignee": "Optional login/name to limit to one developer",
                 },
             },
@@ -314,7 +320,7 @@ class ReportTools:
                 "function": self.sprint_squad_report,
                 "parameter_descriptions": {
                     "sprint": "Sprint name e.g. 'Sprint #91' (default: board's current sprint)",
-                    "board": "Agile board name (default: 'Rango Dev')",
+                    "board": "Agile board name (default: YOUTRACK_DEFAULT_BOARD env var)",
                     "squad": "Optional squad name e.g. 'Squad A' (default: all squads)",
                 },
             },
