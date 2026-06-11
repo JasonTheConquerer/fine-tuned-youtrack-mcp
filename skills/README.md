@@ -12,6 +12,7 @@ then add these.
 | `/whatsup` | Quick digest of your YouTrack notifications — mentions, replies, tickets waiting on you. |
 | `/stuck-tasks` | Current-sprint tasks stuck in the same status >48h (Squads B/C/D), with reviewer, time-in-status, priority, last comments. |
 | `/sprint-summary` | Team → squad → developer summary of a sprint: status at start vs now, unplanned mid-sprint additions; optional HTML/PDF. |
+| `/related-tasks <subject>` | Search YouTrack for issues about a subject; show the latest few with assignee, status, sprint, and recent comments. |
 | `/yt-board` | Board snapshot by Stage column, filtered by Squad. |
 | `/yt-sprint` | Sprint view + the canonical board URLs. |
 | `/yt-standup` | Daily standup snapshot — your open tickets + recent mentions, grouped by Squad. |
